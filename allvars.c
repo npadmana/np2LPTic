@@ -50,8 +50,6 @@ int ThisTask, NTask;
 
 int Local_nx, Local_x_start;
 
-int IdStart;
-
 rfftwnd_mpi_plan Inverse_plan;
 rfftwnd_mpi_plan Forward_plan;
 unsigned int TotalSizePlusAdditional;

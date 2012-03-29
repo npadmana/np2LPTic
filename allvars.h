@@ -104,8 +104,6 @@ extern int      ThisTask, NTask;
 
 extern int      Local_nx, Local_x_start;
 
-extern int  IdStart;
-
 extern unsigned int TotalSizePlusAdditional;
 extern rfftwnd_mpi_plan Inverse_plan;
 extern rfftwnd_mpi_plan Forward_plan;
