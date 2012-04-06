@@ -162,9 +162,6 @@ void displacement_fields(void)
   ASSERT_ALLOC(cdisp[0] && cdisp[1] && cdisp[2]);
 
 
-#if defined(MULTICOMPONENTGLASSFILE) && defined(DIFFERENT_TRANSFER_FUNC)
-  for(Type = MinType; Type <= MaxType; Type++)
-#endif
     {
       if(ThisTask == 0)
 	{
@@ -542,9 +539,6 @@ void displacement_fields(void)
       
       for(n = 0; n < NumPart; n++)
 	{
-#if defined(MULTICOMPONENTGLASSFILE) && defined(DIFFERENT_TRANSFER_FUNC)
-	  if(P[n].Type == Type)
-#endif
 	    {
 	      u = P[n].Pos[0] / Box * Nmesh;
 	      v = P[n].Pos[1] / Box * Nmesh;

@@ -51,15 +51,6 @@ double PowerSpec(double k)
       power *= Tf * Tf;
     }
 
-#if defined(MULTICOMPONENTGLASSFILE) && defined(DIFFERENT_TRANSFER_FUNC)
-
-  if(Type == 2)
-    {
-      power = PowerSpec_DM_2ndSpecies(k);
-    }
-
-#endif
-
   power *= pow(k, PrimordialIndex - 1.0);
 
   return power;

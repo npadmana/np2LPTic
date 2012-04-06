@@ -83,46 +83,10 @@ void save_local_data(void)
       header.mass[i] = 0;
     }
 
-
-#ifdef MULTICOMPONENTGLASSFILE
-  qsort(P, NumPart, sizeof(struct part_data), compare_type);  /* sort particles by type, because that's how they should be stored in a gadget binary file */
-
-  for(i = 0; i < 3; i++)
-    header.npartTotal[i] = header1.npartTotal[i + 1] * GlassTileFac * GlassTileFac * GlassTileFac;
-
-  for(i = 0; i < NumPart; i++)
-    header.npart[P[i].Type]++;
-
-  if(header.npartTotal[0])
-    header.mass[0] =
-      (OmegaBaryon) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box, 3) / (header.npartTotal[0]);
-
-  if(header.npartTotal[1])
-    header.mass[1] =
-      (Omega - OmegaBaryon - OmegaDM_2ndSpecies) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box,
-											    3) /
-      (header.npartTotal[1]);
-
-  if(header.npartTotal[2])
-    header.mass[2] =
-      (OmegaDM_2ndSpecies) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box, 3) / (header.npartTotal[2]);
-
-
-#else
-
   header.npart[1] = NumPart;
   header.npartTotal[1] = TotNumPart;
   header.npartTotal[2] = (TotNumPart >> 32);
   header.mass[1] = (Omega) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box, 3) / TotNumPart;
-
-#ifdef  PRODUCEGAS
-  header.npart[0] = NumPart;
-  header.npartTotal[0] = TotNumPart;
-  header.mass[0] = (OmegaBaryon) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box, 3) / TotNumPart;
-  header.mass[1] = (Omega - OmegaBaryon) * 3 * Hubble * Hubble / (8 * PI * G) * pow(Box, 3) / TotNumPart;
-#endif
-#endif
-
 
   header.time = InitTime;
   header.redshift = 1.0 / InitTime - 1;
@@ -170,18 +134,12 @@ void save_local_data(void)
 
   /* write coordinates */
   dummy = sizeof(float) * 3 * NumPart;
-#ifdef  PRODUCEGAS
-  dummy *= 2;
-#endif
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
   for(i = 0, pc = 0; i < NumPart; i++)
     {
       for(k = 0; k < 3; k++)
 	{
 	  block[3 * pc + k] = P[i].Pos[k];
-#ifdef  PRODUCEGAS
-	  block[3 * pc + k] = periodic_wrap(P[i].Pos[k] + shift_gas);
-#endif
 	}
 
       pc++;
@@ -194,50 +152,18 @@ void save_local_data(void)
     }
   if(pc > 0)
     my_fwrite(block, sizeof(float), 3 * pc, fd);
-#ifdef  PRODUCEGAS
-  for(i = 0, pc = 0; i < NumPart; i++)
-    {
-      for(k = 0; k < 3; k++)
-	{
-	  block[3 * pc + k] = periodic_wrap(P[i].Pos[k] + shift_dm);
-	}
-
-      pc++;
-
-      if(pc == blockmaxlen)
-	{
-	  my_fwrite(block, sizeof(float), 3 * pc, fd);
-	  pc = 0;
-	}
-    }
-  if(pc > 0)
-    my_fwrite(block, sizeof(float), 3 * pc, fd);
-#endif
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
 
 
 
   /* write velocities */
   dummy = sizeof(float) * 3 * NumPart;
-#ifdef  PRODUCEGAS
-  dummy *= 2;
-#endif
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
   for(i = 0, pc = 0; i < NumPart; i++)
     {
       for(k = 0; k < 3; k++)
 	block[3 * pc + k] = P[i].Vel[k];
 
-#ifdef MULTICOMPONENTGLASSFILE
-      if(WDM_On == 1 && WDM_Vtherm_On == 1 && P[i].Type == 1)
-	add_WDM_thermal_speeds(&block[3 * pc]);
-#else
-#ifndef PRODUCEGAS
-      if(WDM_On == 1 && WDM_Vtherm_On == 1)
-	add_WDM_thermal_speeds(&block[3 * pc]);
-#endif
-#endif
-
       pc++;
 
       if(pc == blockmaxlen)
@@ -248,26 +174,6 @@ void save_local_data(void)
     }
   if(pc > 0)
     my_fwrite(block, sizeof(float), 3 * pc, fd);
-#ifdef PRODUCEGAS
-  for(i = 0, pc = 0; i < NumPart; i++)
-    {
-      for(k = 0; k < 3; k++)
-	block[3 * pc + k] = P[i].Vel[k];
-
-      if(WDM_On == 1 && WDM_Vtherm_On == 1)
-	add_WDM_thermal_speeds(&block[3 * pc]);
-
-      pc++;
-
-      if(pc == blockmaxlen)
-	{
-	  my_fwrite(block, sizeof(float), 3 * pc, fd);
-	  pc = 0;
-	}
-    }
-  if(pc > 0)
-    my_fwrite(block, sizeof(float), 3 * pc, fd);
-#endif
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
 
 
@@ -276,9 +182,6 @@ void save_local_data(void)
   dummy = sizeof(int) * NumPart;
 #else
   dummy = sizeof(long long) * NumPart;
-#endif
-#ifdef  PRODUCEGAS
-  dummy *= 2;
 #endif
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
   for(i = 0, pc = 0; i < NumPart; i++)
@@ -310,91 +213,7 @@ void save_local_data(void)
 #endif
     }
 
-#ifdef PRODUCEGAS
-  for(i = 0, pc = 0; i < NumPart; i++)
-    {
-#ifdef NO64BITID
-      blockid[pc] = P[i].ID + TotNumPart;
-#else
-      blocklongid[pc] = P[i].ID + TotNumPart;
-#endif
-
-      pc++;
-
-      if(pc == maxlongidlen)
-	{
-#ifdef NO64BITID
-	  my_fwrite(blockid, sizeof(int), pc, fd);
-#else
-	  my_fwrite(blocklongid, sizeof(long long), pc, fd);
-#endif
-	  pc = 0;
-	}
-    }
-  if(pc > 0)
-    {
-#ifdef NO64BITID
-      my_fwrite(blockid, sizeof(int), pc, fd);
-#else
-      my_fwrite(blocklongid, sizeof(long long), pc, fd);
-#endif
-    }
-#endif
-
   my_fwrite(&dummy, sizeof(dummy), 1, fd);
-
-
-
-
-
-  /* write zero temperatures if needed */
-#ifdef  PRODUCEGAS
-  dummy = sizeof(float) * NumPart;
-  my_fwrite(&dummy, sizeof(dummy), 1, fd);
-  for(i = 0, pc = 0; i < NumPart; i++)
-    {
-      block[pc] = 0;
-
-      pc++;
-
-      if(pc == blockmaxlen)
-	{
-	  my_fwrite(block, sizeof(float), pc, fd);
-	  pc = 0;
-	}
-    }
-  if(pc > 0)
-    my_fwrite(block, sizeof(float), pc, fd);
-  my_fwrite(&dummy, sizeof(dummy), 1, fd);
-#endif
-
-
-  /* write zero temperatures if needed */
-#ifdef  MULTICOMPONENTGLASSFILE
-  if(header.npart[0])
-    {
-      dummy = sizeof(float) * header.npart[0];
-      my_fwrite(&dummy, sizeof(dummy), 1, fd);
-
-      for(i = 0, pc = 0; i < header.npart[0]; i++)
-	{
-	  block[pc] = 0;
-
-	  pc++;
-
-	  if(pc == blockmaxlen)
-	    {
-	      my_fwrite(block, sizeof(float), pc, fd);
-	      pc = 0;
-	    }
-	}
-      if(pc > 0)
-	my_fwrite(block, sizeof(float), pc, fd);
-      my_fwrite(&dummy, sizeof(dummy), 1, fd);
-    }
-#endif
-
-
 
   free(block);
 
@@ -433,16 +252,3 @@ size_t my_fread(void *ptr, size_t size, size_t nmemb, FILE * stream)
   return nread;
 }
 
-
-#ifdef MULTICOMPONENTGLASSFILE
-int compare_type(const void *a, const void *b)
-{
-  if(((struct part_data *) a)->Type < (((struct part_data *) b)->Type))
-    return -1;
-
-  if(((struct part_data *) a)->Type > (((struct part_data *) b)->Type))
-    return +1;
-
-  return 0;
-}
-#endif

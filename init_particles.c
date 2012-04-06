@@ -5,6 +5,9 @@
 #include "fft.h"
 
 
+// NP --- scour this code for 64 bit stuff
+// in particular npart_Task and its ilk
+// ??????????
 
 void init_particles()
 {
@@ -17,20 +20,6 @@ void init_particles()
 
   for(i = 0; i < NTask; i++)
     npart_Task[i] = 0;
-
-#if defined(MULTICOMPONENTGLASSFILE) && defined(DIFFERENT_TRANSFER_FUNC)
-  MinType = 7;
-  MaxType = -2;
-  for(type = 0; type < 6; type++)
-    if(header1.npartTotal[type])
-      {
-	if(MinType > type - 1)
-	  MinType = type - 1;
-
-	if(MaxType < type - 1)
-	  MaxType = type - 1;
-      }
-#endif
 
   // Figure out the number of particles per slab
   for(i = 0; i < GlassTileFac; i++)
@@ -102,9 +91,6 @@ void init_particles()
 		P[count].Pos[0] = x;
 		P[count].Pos[1] = y;
 		P[count].Pos[2] = z;
-#ifdef  MULTICOMPONENTGLASSFILE
-		      P[count].Type = type - 1;
-#endif
 		P[count].ID = IDStart;
 
 		count++;
