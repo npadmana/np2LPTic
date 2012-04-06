@@ -1,6 +1,7 @@
 #include <math.h>
 #include "allvars.h"
 #include "proto.h"
+#include "utils.h"
 
 
 static double R8;

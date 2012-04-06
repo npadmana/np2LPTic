@@ -49,7 +49,6 @@ header, header1;
 
 
 extern int      Nglass;
-extern int      *Local_nx_table;
 extern int      WhichSpectrum;
 
 
@@ -77,7 +76,6 @@ extern int      NumPart;
 extern int      NTaskWithN;
 
 
-extern int      *Slab_to_task;
 
 
 extern struct part_data 
@@ -101,16 +99,6 @@ extern int  NumFilesWrittenInParallel;
 
 
 extern int      ThisTask, NTask;
-
-extern int      Local_nx, Local_x_start;
-
-extern unsigned int TotalSizePlusAdditional;
-extern rfftwnd_mpi_plan Inverse_plan;
-extern rfftwnd_mpi_plan Forward_plan;
-//extern fftw_real        *Disp;
-extern fftw_real        *Workspace;
-//extern fftw_complex     *Cdata;
-
 
 extern double UnitTime_in_s, UnitLength_in_cm, UnitMass_in_g, UnitVelocity_in_cm_per_s;
 extern double InputSpectrum_UnitLength_in_cm;

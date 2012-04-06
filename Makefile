@@ -1,9 +1,9 @@
 EXEC   = 2LPTic
 
-OBJS   = main.o power.o allvars.o save.o read_param.o  read_glass.o  \
+OBJS   = main.o power.o allvars.o fft.o save.o read_param.o utils.o read_glass.o  \
          nrsrc/nrutil.o nrsrc/qromb.o nrsrc/polint.o nrsrc/trapzd.o
 
-INCL   = allvars.h proto.h  nrsrc/nrutil.h  Makefile
+INCL   = allvars.h proto.h fft.h utils.h  nrsrc/nrutil.h  Makefile
 
 
 
@@ -44,6 +44,8 @@ FFTW_LIB =  $(FFTW_LIBS) -ldrfftw_mpi -ldfftw_mpi -ldrfftw -ldfftw
 LIBS   =   -lm  $(MPICHLIB)  $(FFTW_LIB)  $(GSL_LIBS)  -lgsl -lgslcblas
 
 CFLAGS =   $(OPTIONS)  $(OPTIMIZE)  $(FFTW_INCL) $(GSL_INCL)
+
+all : $(EXEC)
 
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS)   -o  $(EXEC)  

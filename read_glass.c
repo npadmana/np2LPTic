@@ -3,7 +3,7 @@
 #include <mpi.h>
 #include "allvars.h"
 #include "proto.h"
-
+#include "fft.h"
 
 
 

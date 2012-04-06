@@ -7,8 +7,6 @@ int WhichSpectrum;
 
 
 int SphereMode;
-int *Local_nx_table;
-
 FILE *FdTmp, *FdTmpInput;
 
 int Nmesh, Nsample;
@@ -29,8 +27,6 @@ long long TotNumPart;
 
 int NumPart;
 
-int *Slab_to_task;
-
 int NTaskWithN;
 
 struct part_data *P;
@@ -48,14 +44,6 @@ int NumFilesWrittenInParallel;
 
 int ThisTask, NTask;
 
-int Local_nx, Local_x_start;
-
-rfftwnd_mpi_plan Inverse_plan;
-rfftwnd_mpi_plan Forward_plan;
-unsigned int TotalSizePlusAdditional;
-//fftw_real *Disp;
-fftw_real *Workspace;
-//fftw_complex *Cdata;
 
 
 double UnitTime_in_s, UnitLength_in_cm, UnitMass_in_g, UnitVelocity_in_cm_per_s;

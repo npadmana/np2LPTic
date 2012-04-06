@@ -3,12 +3,9 @@
 
 double GrowthFactor(double astart, double aend);
 void   print_spec(void);
-int    FatalError(int errnum);
 void   displacement_fields(void);
-void   initialize_ffts(void);
 void   set_units(void);
 void   assemble_particles(void);
-void   free_ffts(void);
 double fnl(double x);
 
 int find_files(char *fname);
