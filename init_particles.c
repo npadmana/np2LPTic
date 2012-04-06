@@ -1,7 +1,5 @@
-#include <math.h>
 #include <stdlib.h>
 #include "allvars.h"
-//#include "proto.h"
 #include "fft.h"
 
 
@@ -11,7 +9,7 @@
 
 void init_particles()
 {
-  int i, j, k, slab, count, type;
+  int i, j, k, slab, count ;
   float x, y, z;
   size_t bytes;
   int *npart_Task;
