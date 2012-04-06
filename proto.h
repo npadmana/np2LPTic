@@ -36,7 +36,7 @@ int    compare_logk(const void *a, const void *b);
 
 void  write_particle_data(void);
 void  read_parameterfile(char *fname);
-void  read_glass(char *fname);
+void  init_particles();
 
 
 double tk_eh(double k);

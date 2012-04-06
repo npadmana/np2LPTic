@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
   initialize_ffts(ThisTask, NTask, Nmesh);
 
-  read_glass(GlassFile);
+  init_particles();
 
   displacement_fields();
 
