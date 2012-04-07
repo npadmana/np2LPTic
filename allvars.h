@@ -1,13 +1,8 @@
-#include <drfftw_mpi.h>
-
 #define  PI          3.14159265358979323846 
 #define  GRAVITY     6.672e-8
 #define  HUBBLE      3.2407789e-18   /* in h/sec */
 
 
-double PowerSpec(double kmag);
-double F_Omega(double a);
-double F2_Omega(double a);
 int    read_parameter_file(char *fname);
 
 
@@ -47,9 +42,6 @@ header, header1;
 
 extern int      Nglass;
 extern int      WhichSpectrum;
-
-
-extern FILE     *FdTmp, *FdTmpInput;
 
 extern int      Nmesh, Nsample;
 
@@ -105,11 +97,6 @@ extern double PrimordialIndex;
 extern double ShapeGamma;
 
 extern double Dplus; /* growth factor */
-
-
-#ifdef DIFFERENT_TRANSFER_FUNC
-extern int Type, MinType, MaxType;
-#endif
 
 extern int    WDM_On;
 extern int    WDM_Vtherm_On;

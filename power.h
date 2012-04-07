@@ -6,6 +6,7 @@ double PowerSpec(double kmag);
 void   initialize_powerspectrum(void);
 double GrowthFactor(double astart, double aend);
 double F_Omega(double a);
+double F2_Omega(double a);
 
 
 

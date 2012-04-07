@@ -4,6 +4,7 @@
 #include "allvars.h"
 #include "proto.h"
 #include "utils.h"
+#include "mpi.h"
 
 
 

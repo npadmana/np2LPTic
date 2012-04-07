@@ -7,7 +7,6 @@ int WhichSpectrum;
 
 
 int SphereMode;
-FILE *FdTmp, *FdTmpInput;
 
 int Nmesh, Nsample;
 
@@ -56,10 +55,6 @@ double OmegaBaryon, HubbleParam;
 double ShapeGamma;
 double PrimordialIndex;
 double Dplus;			/* growth factor */
-
-#ifdef DIFFERENT_TRANSFER_FUNC
-int Type, MinType, MaxType;
-#endif
 
 int WDM_On;
 int WDM_Vtherm_On;

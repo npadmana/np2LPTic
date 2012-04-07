@@ -1,8 +1,8 @@
-//#include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "allvars.h"
-//#include "proto.h"
+#include "utils.h"
 
 
 void read_parameterfile(char *fname)
@@ -199,8 +199,7 @@ void read_parameterfile(char *fname)
 
   if(errorFlag)
     {
-      MPI_Finalize();
-      exit(0);
+      FatalError(1313);
     }
 
 

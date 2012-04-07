@@ -1,7 +1,8 @@
 #include <math.h>
+#include <stdio.h>
 #include "power.h"
+
 #include "allvars.h"
-//#include "proto.h"
 #include "utils.h"
 #include "gsl/gsl_integration.h"
 
@@ -196,10 +197,6 @@ void initialize_powerspectrum(void)
 
   if(WhichSpectrum == 2)
     read_power_table();
-
-#ifdef DIFFERENT_TRANSFER_FUNC
-  Type = 1;
-#endif
 
   Norm = 1.0;
   res = TopHatSigma2(R8);
