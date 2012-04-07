@@ -1,8 +1,8 @@
-#include <math.h>
+//#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "allvars.h"
-#include "proto.h"
+//#include "proto.h"
 
 
 void read_parameterfile(char *fname)
@@ -71,10 +71,6 @@ void read_parameterfile(char *fname)
   strcpy(tag[nt], "Nsample");
   addr[nt] = &Nsample;
   id[nt++] = INT;
-
-  strcpy(tag[nt], "GlassFile");
-  addr[nt] = GlassFile;
-  id[nt++] = STRING;
 
   strcpy(tag[nt], "FileWithInputSpectrum");
   addr[nt] = FileWithInputSpectrum;
