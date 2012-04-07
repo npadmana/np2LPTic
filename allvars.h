@@ -6,12 +6,9 @@
 
 
 double PowerSpec(double kmag);
-double GrowthFactor(double astart, double aend);
 double F_Omega(double a);
 double F2_Omega(double a);
 int    read_parameter_file(char *fname);
-double PowerSpec_EH(double k);
-double PowerSpec_Efstathiou(double k);
 
 
 #ifdef T3E

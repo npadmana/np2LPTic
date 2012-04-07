@@ -1,7 +1,9 @@
 #include <math.h>
+#include "power.h"
 #include "allvars.h"
-#include "proto.h"
+//#include "proto.h"
 #include "utils.h"
+#include "gsl/gsl_integration.h"
 
 
 static double R8;
@@ -11,6 +13,16 @@ static double AA, BB, CC;
 static double nu;
 static double Norm;
 
+// Forward declarations
+double PowerSpec_Efstathiou(double k);
+double PowerSpec_EH(double k);
+double PowerSpec_Tabulated(double k);
+double PowerSpec_DM_2ndSpecies(double k);
+double TopHatSigma2(double R);
+int    compare_logk(const void *a, const void *b);
+void   read_power_table(void);
+double tk_eh(double k);
+double growth(double a);
 
 static int NPowerTable;
 
@@ -21,6 +33,26 @@ static struct pow_table
  *PowerTable;
 
 
+/* Define a wrapper around the GSL integrator */
+double integrate(double (*func)(double x, void *params), double a, double b, double epsrel) {
+
+  // Define variables
+  double result, error;
+  
+  // Allocate the workspace
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(1000);
+  gsl_function F;
+  F.function = func;
+  F.params = 0;
+  gsl_integration_qag(&F, a, b, 0, epsrel ,1000, 1, w, &result, &error);
+  gsl_integration_workspace_free(w);
+
+  // All done
+  return result;
+}
+
+
+// Switch to different choices of power spectrum
 double PowerSpec(double k)
 {
   double power, alpha, Tf;
@@ -80,7 +112,7 @@ void read_power_table(void)
   double k, p;
 
 
-  sprintf(buf, FileWithInputSpectrum);
+  sprintf(buf, "%s", FileWithInputSpectrum);
 
   if(!(fd = fopen(buf, "r")))
     {
@@ -110,7 +142,7 @@ void read_power_table(void)
 
   PowerTable = malloc(NPowerTable * sizeof(struct pow_table));
 
-  sprintf(buf, FileWithInputSpectrum);
+  sprintf(buf,"%s",FileWithInputSpectrum);
 
   if(!(fd = fopen(buf, "r")))
     {
@@ -271,18 +303,7 @@ double tk_eh(double k)		/* from Martin White */
   return (tmp);
 }
 
-
-
-double TopHatSigma2(double R)
-{
-  r_tophat = R;
-
-  return qromb(sigma2_int, 0, 500.0 * 1 / R);	/* note: 500/R is here chosen as 
-						   integration boundary (infinity) */
-}
-
-
-double sigma2_int(double k)
+double sigma2_int(double k, void *params)
 {
   double kr, kr3, kr2, w, x;
 
@@ -299,10 +320,24 @@ double sigma2_int(double k)
   return x;
 }
 
+double TopHatSigma2(double R)
+{
+  r_tophat = R;
+
+  // Step down accuracy
+  return integrate(sigma2_int, 0, 500.0 * 1 / R, 1.e-4);	
+  /* note: 500/R is here chosen as integration boundary (infinity) */
+}
+
 
 double GrowthFactor(double astart, double aend)
 {
   return growth(aend) / growth(astart);
+}
+
+double growth_int(double a, void *params)
+{
+  return pow(a / (Omega + (1 - Omega - OmegaLambda) * a + OmegaLambda * a * a * a), 1.5);
 }
 
 
@@ -312,14 +347,9 @@ double growth(double a)
 
   hubble_a = sqrt(Omega / (a * a * a) + (1 - Omega - OmegaLambda) / (a * a) + OmegaLambda);
 
-  return hubble_a * qromb(growth_int, 0, a);
+  return hubble_a * integrate(growth_int, 0, a, 1.e-8);
 }
 
-
-double growth_int(double a)
-{
-  return pow(a / (Omega + (1 - Omega - OmegaLambda) * a + OmegaLambda * a * a * a), 1.5);
-}
 
 
 double F_Omega(double a)
@@ -353,7 +383,7 @@ double fermi_dirac_cumprob[LENGTH_FERMI_DIRAC_TABLE];
 
 double WDM_V0 = 0;
 
-double fermi_dirac_kernel(double x)
+double fermi_dirac_kernel(double x, void *params)
 {
   return x * x / (exp(x) + 1);
 }
@@ -365,7 +395,7 @@ void fermi_dirac_init(void)
   for(i = 0; i < LENGTH_FERMI_DIRAC_TABLE; i++)
     {
       fermi_dirac_vel[i] = MAX_FERMI_DIRAC * i / (LENGTH_FERMI_DIRAC_TABLE - 1.0);
-      fermi_dirac_cumprob[i] = qromb(fermi_dirac_kernel, 0, fermi_dirac_vel[i]);
+      fermi_dirac_cumprob[i] = integrate(fermi_dirac_kernel, 0, fermi_dirac_vel[i], 1.e-8);
     }
 
   for(i = 0; i < LENGTH_FERMI_DIRAC_TABLE; i++)

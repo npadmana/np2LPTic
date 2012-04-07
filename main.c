@@ -8,6 +8,7 @@
 #include "proto.h"
 #include "fft.h"
 #include "utils.h"
+#include "power.h"
 
 
 int main(int argc, char **argv)
